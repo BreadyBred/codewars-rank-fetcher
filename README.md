@@ -27,9 +27,10 @@ This script offers a practical solution for Codewars users who want to:
     git clone https://github.com/BreadyBred/codewars_rank_fetcher
     ```
 
-2.  **Configure the Script (Optional):**
+2.  **Configure the Script:**
 
-    *   The script uses a separate `data/categories.json` file to define all the categories from the Codewars library.
+    *   Run `pip install -r requirements.txt` in order to install all the necessary modules for the tool to work.
+    *   Set categories_to_check to the names of the categories you want the script to process. Leave it empty to check all the available categories.
 
 3.  **Run the Script:**
 

@@ -1,11 +1,11 @@
-import subprocess
-import sys
 import json
 import os
 import requests
+import sys
 import time
 from lxml import html
 from colorama import Fore, init
+from importlib.metadata import version, PackageNotFoundError
 
 # Initialize colorama
 init(autoreset=True)
@@ -22,20 +22,46 @@ hide_empty_ranks = False if hide_empty_ranks_input in ["no", "n", "N"] else True
 
 categories_to_check = []
 
-def install_requirements():
-	"""Install required dependencies from requirements.txt."""
-	print(f"\n{Fore.YELLOW}Checking and installing required dependencies...")
+def check_requirements():
+    """Check if all requirements are installed. Exit if any are missing."""
+    print(f"\n{Fore.CYAN}Checking if all necessary requirements are installed...")
+    try:
+        with open("requirements.txt", "r") as f:
+            requirements = f.read().strip().splitlines()
 
-	if not os.path.exists(requirements_file):
-		print(f"{Fore.RED}requirements.txt not found!")
-		sys.exit(1)
+        if not requirements:
+            print("No requirements found in requirements.txt.")
+            return
 
-	try:
-		subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-		print(f"{Fore.GREEN}All dependencies installed successfully.")
-	except subprocess.CalledProcessError as e:
-		print(f"{Fore.RED}Failed to install dependencies: {e}")
-		sys.exit(1)
+        # Check for missing packages
+        missing_packages = []
+        for requirement in requirements:
+            # Split the package name and version specifier (if any)
+            if "==" in requirement:
+                package, required_version = requirement.split("==")
+            else:
+                package, required_version = requirement, None
+
+            try:
+                installed_version = version(package)
+                if required_version and installed_version != required_version:
+                    missing_packages.append(f"{package}=={required_version} (Installed: {installed_version})")
+            except PackageNotFoundError:
+                missing_packages.append(requirement)
+
+        if missing_packages:
+            print(f"Missing or incompatible packages found:\n{', '.join(missing_packages)}")
+            print("Please install the missing packages and try again.")
+            sys.exit(1)
+
+        print(f"{Fore.GREEN}All requirements are installed.\n")
+
+    except FileNotFoundError:
+        print(f"Error: {requirements_file} not found.")
+        sys.exit(1)
+    except Exception as e:
+        print(f"An error occurred while checking requirements: {e}")
+        sys.exit(1)
 
 def create_json_file():
 	"""Create or reset the ranks.json file."""
@@ -48,12 +74,12 @@ def create_json_file():
 
 def initialize_categories():
     global global_categories
-    print(f"{Fore.CYAN}Initializing categories...\n")
+    print(f"{Fore.CYAN}Initializing categories...")
     global_categories = get_categories()
 
 def get_categories():
 	"""Fetch categories from categories.json."""
-	print(f"\n{Fore.CYAN}Fetching categories from {categories_file_path}...")
+	print(f"{Fore.CYAN}Fetching categories from {categories_file_path}...")
 
 	if not os.path.exists(categories_file_path):
 		raise Exception(f"{Fore.RED}File not found: {categories_file_path}")
@@ -147,8 +173,7 @@ def sort_json_ranks():
 		print(f"{Fore.YELLOW}Ranks not sorted.")
 
 def main():
-	install_requirements()
-
+	check_requirements()
 	try:
 		initialize_categories()
 	except Exception as e:
