@@ -8,7 +8,7 @@ define("username", "BreadyBred");
 define("file_path", "ranks.json");
 
 # Add the categories you want the script to check
-# Keep empty for all categories
+# Keep empty to check all categories
 $categories_to_check = ["RISC-V", "VB"];
 
 # Hide empty ranks (true/false)
