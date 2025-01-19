@@ -15,12 +15,12 @@ file_path = "ranks.json"
 categories_file_path = "data/categories.json"
 requirements_file = 'requirements.txt'
 
-# Ask your Codewars username
 username = input(f"{Fore.CYAN}Please enter your Codewars username: {Fore.WHITE}")
 
-# Ask the user whether they want to hide empty ranks
 hide_empty_ranks_input = input(f"{Fore.CYAN}Would you like to hide the empty ranks? (Y/n): ").strip().lower()
-hide_empty_ranks = True if hide_empty_ranks_input in ["yes", "y", "Y"] else False
+hide_empty_ranks = False if hide_empty_ranks_input in ["no", "n", "N"] else True
+
+categories_to_check = []
 
 def install_requirements():
 	"""Install required dependencies from requirements.txt."""
@@ -46,6 +46,11 @@ def create_json_file():
 	with open(file_path, 'w') as f:
 		json.dump(data, f, indent=4)
 
+def initialize_categories():
+    global global_categories
+    print(f"{Fore.CYAN}Initializing categories...\n")
+    global_categories = get_categories()
+
 def get_categories():
 	"""Fetch categories from categories.json."""
 	print(f"\n{Fore.CYAN}Fetching categories from {categories_file_path}...")
@@ -58,10 +63,6 @@ def get_categories():
 
 	print(f"{Fore.GREEN}Categories loaded.\n")
 	return categories
-
-def fill_all_categories(categories):
-	"""Fill the list with all categories."""
-	return list(categories.keys())
 
 def write_rank_in_json(category, rank):
 	"""Write the user's rank to ranks.json."""
@@ -76,20 +77,20 @@ def write_rank_in_json(category, rank):
 	with open(file_path, 'w') as f:
 		json.dump(data, f, indent=4)
 
-def get_formatted_category_name(category, categories):
+def get_formatted_category_name(category):
 	"""Return formatted category name."""
-	return categories.get(category, category)
+	return global_categories.get(category, category)
 
-def add_codewars_rank(category, categories):
+def add_codewars_rank(category):
 	"""Fetch the user's rank for a specific category."""
 	print(f"\n{Fore.CYAN}Fetching rank for category '{category}' from Codewars...")
-	formatted_category = get_formatted_category_name(category, categories)
+	formatted_category = get_formatted_category_name(category)
 	url = f"https://www.codewars.com/users/leaderboard/ranks?language={formatted_category}"
 
 	try:
 		response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
 		response.raise_for_status()
-		print(f"{Fore.GREEN}Data fetched successfully for category '{category}'.")
+		print(f"{Fore.GREEN}Data fetched successfully.")
 	except requests.RequestException as e:
 		print(f"{Fore.RED}Error fetching data for category '{category}': {e}")
 		return None
@@ -107,18 +108,18 @@ def add_codewars_rank(category, categories):
 				print(f"{Fore.GREEN}Rank for {username} in category '{category}' is: {user_rank}")
 				return user_rank
 
-	print(f"{Fore.YELLOW}No rank found for {username} in category '{category}'.")
+	print(f"{Fore.YELLOW}No rank found for {username}.")
 	return None
 
 def get_codewars_ranks(categories, hide_empty_ranks):
 	"""Get ranks for the specified categories."""
 	if not categories:
 		print(f"{Fore.CYAN}No specific categories provided, filling all categories...")
-		categories = fill_all_categories(categories)
+		categories = list(global_categories.keys())
 
 	print(f"{Fore.CYAN}Fetching ranks for categories: {categories}")
 	for category in categories:
-		user_rank = add_codewars_rank(category, categories)
+		user_rank = add_codewars_rank(category)
 
 		if hide_empty_ranks and user_rank is None:
 			print(f"{Fore.YELLOW}Rank is empty for category '{category}', skipping...")
@@ -149,7 +150,7 @@ def main():
 	install_requirements()
 
 	try:
-		categories = get_categories()
+		initialize_categories()
 	except Exception as e:
 		print(f"{Fore.RED}Error initializing categories: {e}")
 		sys.exit(1)
@@ -158,7 +159,7 @@ def main():
 
 	create_json_file()
 
-	get_codewars_ranks(categories, hide_empty_ranks)
+	get_codewars_ranks(categories_to_check, hide_empty_ranks)
 	sort_json_ranks()
 
 	end_time = time.time()
