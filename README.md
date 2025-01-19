@@ -2,6 +2,10 @@
 
 This PHP script automates the process of retrieving and storing your Codewars rankings, providing a convenient way to display your achievements and track your progress for portfolios, resumes, or personal websites.
 
+**⚠️ Important Performance Note:**
+
+Fetching data for a large number of categories can take some time due to the nature of web scraping and the way Codewars structures its leaderboard pages. If you are tracking many categories, be prepared for the script to run for a longer duration. Consider tracking only the categories you are most interested in to improve performance.
+
 ## Key Features
 
 *	**Dynamic Data Retrieval:** Fetches leaderboard data from Codewars using file_put_contents, ensuring your ranks are up-to-date.
