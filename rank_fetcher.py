@@ -160,10 +160,10 @@ def main():
 	create_json_file()
 
 	get_codewars_ranks(categories_to_check, hide_empty_ranks)
-	sort_json_ranks()
-
 	end_time = time.time()
 	elapsed_time = end_time - start_time
+
+	sort_json_ranks()
 	print(f"\n{Fore.GREEN}Rank fetching process completed in {elapsed_time:.2f} seconds.")
 
 if __name__ == "__main__":
