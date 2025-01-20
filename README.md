@@ -8,7 +8,7 @@ This Python script automates the process of retrieving and storing your Codewars
 *   **Flexible Configuration:**
     *   Specify your Codewars username.
     *   Define categories to track (or track all categories).
-    *   Choose to hide empty ranks in the output.
+    *   Choose to hide empty ranks and/or to sort the ranks in the output.
 *   **JSON Storage:** Saves your ranks in a structured JSON file (`ranks.json`) for easy access and future use.
 
 ## Why Use This Script?
@@ -42,10 +42,10 @@ This script offers a practical solution for Codewars users who want to:
         python rank_fetcher.py
         py rank_fetcher.py
         ```
+    4. Configure the way you want the data to be fetched.
 
 This will fetch your latest ranks for the specified categories and store them in the `ranks.json` file.
 
 ## Further Enhancements
 
-*   **Command-line arguments:** We consider adding command-line arguments for configuration options like specifying a custom categories file.
 *   **Codewars API:** The addition of modules to gather information from the official Codewars API for potentially more reliable and efficient data retrieval. This might require additional code to interact with the API.
