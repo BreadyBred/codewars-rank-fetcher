@@ -160,7 +160,7 @@ class CodewarsGUI:
 		try:
 			response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
 			response.raise_for_status()
-			self.add_status_message(f"Data fetched for {display_name}", 'success')
+			self.add_status_message(f"Data fetched successfully", 'success')
 		except requests.RequestException as e:
 			self.add_status_message(f"Error fetching {display_name}: {str(e)}", 'error')
 			return None
@@ -181,13 +181,59 @@ class CodewarsGUI:
 					)
 					return user_rank
 
-		self.add_status_message(f"No rank found for {self.username.get()} in {display_name}\n", 'info')
+		self.add_status_message(f"No rank found\n", 'info')
 		return None
+
+	def fetch_user_data(self):
+		"""
+		Fetch user data from Codewars API to validate username and get additional information.
+		Returns a tuple of (success, message, data).
+		"""
+		username = self.username.get()
+		url = f"https://www.codewars.com/api/v1/users/{username}"
+		
+		try:
+			response = requests.get(url)
+			data = response.json()
+			
+			if 'reason' in data and data['reason'] == 'not found':
+				return False, "Username doesn't exist, please try again", None
+				
+			honor_points = data.get('honor')
+			leaderboard_position = data.get('leaderboardPosition')
+			total_completed = data.get('codeChallenges', {}).get('totalCompleted')
+			
+			self.add_status_message(
+				f"Found user {username}\n"
+				f"Honor: {honor_points}\n"
+				f"Leaderboard Position: {leaderboard_position}\n"
+				f"Total Completed Challenges: {total_completed}\n",
+				'success'
+			)
+			
+			return True, "User found", {
+				'honor': honor_points,
+				'leaderboardPosition': leaderboard_position,
+				'totalCompleted': total_completed
+			}
+			
+		except requests.RequestException as e:
+			return False, f"Error fetching user data: {str(e)}", None
+		except json.JSONDecodeError:
+			return False, "Error parsing API response", None
 
 	def fetch_ranks(self):
 		"""Main function to fetch all ranks."""
 		try:
 			self.clear_status_messages()
+			
+			success, message, user_data = self.fetch_user_data()
+			if not success:
+				self.set_status(message, 'error')
+				self.add_status_message(message, 'error')
+				messagebox.showerror("Error", message)
+				return
+
 			self.create_json_file()
 			selected_categories = [(name, info['value']) 
 								for name, info in self.categories.items() 
@@ -197,18 +243,20 @@ class CodewarsGUI:
 				self.add_status_message("No categories selected - checking all categories\n", 'info')
 				selected_categories = [(name, info['value']) 
 									for name, info in self.categories.items()]
-			else :
+			else:
 				self.add_status_message("Fetching ranks for selected categories\n", 'info')
+
+			self.write_user_data(user_data)
 
 			total_categories = len(selected_categories)
 			for i, (display_name, category) in enumerate(selected_categories, 1):
 				user_rank = self.add_codewars_rank(category, display_name)
 
+				self.progress_var.set((i / total_categories) * 100)
 				if self.hide_empty_ranks.get() and user_rank is None:
 					continue
 
 				self.write_rank_in_json(display_name, user_rank)
-				self.progress_var.set((i / total_categories) * 100)
 
 			self.sort_json_ranks()
 			self.set_status("Rank fetching completed!", 'success')
@@ -223,6 +271,20 @@ class CodewarsGUI:
 		finally:
 			self.start_button.config(state=tk.NORMAL)
 			self.progress_var.set(0)
+
+	def write_user_data(self, user_data):
+		"""Write user data to the JSON file."""
+		with open(self.file_path, 'r') as f:
+			data = json.load(f)
+		
+		data[self.username.get()]['userData'] = {
+			'honor': user_data['honor'],
+			'leaderboard_position': user_data['leaderboardPosition'],
+			'total_completed': user_data['totalCompleted']
+		}
+		
+		with open(self.file_path, 'w') as f:
+			json.dump(data, f, indent=4)
 
 	def _on_mousewheel(self, event):
 		self.canvas.yview_scroll(int(-1*(event.delta/120)), "units")
@@ -283,6 +345,7 @@ class CodewarsGUI:
 			json.dump(data, f, indent=4)
 
 	def sort_json_ranks(self):
+		"""Sort the ranks while ignoring the userData field"""
 		if not self.sort_ranks.get():
 			return
 
@@ -290,11 +353,16 @@ class CodewarsGUI:
 			data = json.load(f)
 
 		username = self.username.get()
+		user_data = data[username].get('userData', {})
+		
+		ranks_only = {k: v for k, v in data[username].items() if k != 'userData'}
 		sorted_ranks = sorted(
-			data[username].items(),
+			ranks_only.items(),
 			key=lambda x: (x[1] if x[1] is not None else float('inf'))
 		)
-		data[username] = dict(sorted_ranks)
+		
+		data[username] = {'userData': user_data}
+		data[username].update(dict(sorted_ranks))
 
 		with open(self.file_path, 'w') as f:
 			json.dump(data, f, indent=4)

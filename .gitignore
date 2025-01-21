@@ -1,5 +1,6 @@
 # Test files
 ranks*.json
+*_format.*
 
 # Build files and folders
 build/
