@@ -13,11 +13,7 @@ This Python script automates the process of retrieving and storing your Codewars
 
 ## Why Use This Script?
 
-This script offers a practical solution for Codewars users who want to:
-
-*   Effortlessly track their Codewars ranking progress across various categories.
-*   Gain experience with essential Python libraries like `requests`, `json`, and web scraping techniques.
-*   Develop a reusable script for leaderboard data retrieval and storage.
+This script offers a practical solution for Codewars users who want to effortlessly track their Codewars ranking progress across various categories.
 
 ## Getting Started
 
@@ -27,20 +23,21 @@ This script offers a practical solution for Codewars users who want to:
     git clone https://github.com/BreadyBred/codewars_rank_fetcher
     ```
 
-2.  **Configure the Script:**
+2.  **Run the Script:**
 
-    *   Run `pip install -r requirements.txt` in order to install all the necessary modules for the tool to work.
-    *   Set categories_to_check to the names of the categories you want the script to process. Leave it empty to check all the available categories.
+    **a) EXE File (Recommended):**
+    1.  Just launch the executable file `codewars_rank_fetcher.exe`.
+    2. Configure the way you want the data to be fetched.
+    3. That's it!
 
-3.  **Run the Script:**
-
-    1.  Open your terminal, command prompt or preferred IDE.
-    2.  Navigate to the directory where you saved the `rank_fetcher.py` file.
+    **b) Command-line:**
+    1.  Open your terminal, command prompt or preferred IDE inside the directory where you saved the `codewars_rank_fetcher.py` file.
+    2.  Run `pip install -r requirements.txt` in order to install all the necessary modules for the tool to work.
     3.  Execute the script using the Python command-line interpreter:
 
         ```bash
-        python rank_fetcher.py
-        py rank_fetcher.py
+        python codewars_rank_fetcher.py
+        py codewars_rank_fetcher.py
         ```
     4. Configure the way you want the data to be fetched.
 
