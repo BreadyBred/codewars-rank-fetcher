@@ -1,1 +1,10 @@
+# Test files
 ranks*.json
+
+# Python script
+*.py
+
+# Build files and folders
+build/
+dist/
+*.spec
