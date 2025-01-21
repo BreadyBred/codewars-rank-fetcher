@@ -1,4 +1,4 @@
-# Codewars Leaderboard Rank Fetcher
+# Codewars Rank Fetcher
 
 This Python script automates the process of retrieving and storing your Codewars rankings, providing a convenient way to display your achievements and track your progress for portfolios, resumes, or personal websites.
 
