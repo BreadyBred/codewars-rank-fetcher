@@ -1,6 +1,7 @@
 # Test files
 ranks*.json
 *_format.*
+auto_update.py
 
 # Build files and folders
 build/
