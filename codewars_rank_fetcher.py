@@ -23,7 +23,7 @@ class CodewarsGUI:
 		self.hide_empty_ranks = tk.BooleanVar(value=True)
 		self.sort_ranks = tk.BooleanVar(value=True)
 		self.categories = {}
-		self.file_path = "output/ranks.json"
+		self.file_path = "output/output.json"
 
 		# Create main frame
 		main_frame = ttk.Frame(root, padding="10")
@@ -202,19 +202,23 @@ class CodewarsGUI:
 			honor_points = data.get("honor")
 			leaderboard_position = data.get("leaderboardPosition")
 			total_completed = data.get("codeChallenges", {}).get("totalCompleted")
+
+			languages = data.get("ranks", {}).get("languages", {})
+			languages_infos = {lang : languages[lang].get("score") for lang in languages}
 			
 			self.add_status_message(
 				f"Found user {username}\n"
 				f"Honor: {honor_points}\n"
 				f"Leaderboard Position: {leaderboard_position}\n"
 				f"Total Completed Challenges: {total_completed}\n",
-				"success"
+				"Languages scores fetched successfully",
 			)
 			
 			return True, "User found", {
 				"honor": honor_points,
 				"leaderboardPosition": leaderboard_position,
-				"totalCompleted": total_completed
+				"totalCompleted": total_completed,
+				"languagesScores": languages_infos
 			}
 			
 		except requests.RequestException as e:
@@ -280,7 +284,8 @@ class CodewarsGUI:
 		data[self.username.get()]["user_data"] = {
 			"honor": user_data["honor"],
 			"leaderboard_position": user_data["leaderboardPosition"],
-			"total_completed": user_data["totalCompleted"]
+			"total_completed": user_data["totalCompleted"],
+			"languages_scores": user_data["languagesScores"]
 		}
 		
 		with open(self.file_path, "w") as f:
