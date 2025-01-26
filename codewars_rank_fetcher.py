@@ -12,6 +12,16 @@ class CodewarsGUI:
 		self.root.title("Codewars Rank Fetcher")
 		self.root.columnconfigure(0, weight=1)
 		self.root.rowconfigure(0, weight=1)
+	
+		window_width = 450
+		window_height = 700
+		screen_width = self.root.winfo_screenwidth()
+		screen_height = self.root.winfo_screenheight()
+		position_x = (screen_width // 2) - (window_width // 2)
+		position_y = (screen_height // 2) - (window_height // 2)
+
+		self.root.geometry(f"{window_width}x{window_height}+{position_x}+{position_y}")
+		# self.root.geometry("450x700")
 
 		self.colors = {
 			"error": "#ff0000",    # Red

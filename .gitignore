@@ -1,5 +1,6 @@
 # Test files
 ranks*.json
+output*.json
 *_format.*
 auto_update.py
 
