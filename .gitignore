@@ -2,9 +2,9 @@
 ranks*.json
 output*.json
 *_format.*
-auto_update.py
 
 # Build files and folders
+*.py
 build/
 dist/
 *.spec
