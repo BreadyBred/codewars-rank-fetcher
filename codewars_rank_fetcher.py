@@ -1,4 +1,5 @@
 import tkinter as tk
+import customtkinter as ctk
 from tkinter import ttk, messagebox
 import json
 import os
@@ -123,11 +124,22 @@ class CodewarsGUI:
 		self.detailed_status.tag_configure("info", foreground=self.colors["info"])
 
 		# Start button
-		self.start_button = ttk.Button(
-			main_frame,
+		# self.start_button = ttk.Button(
+		# 	main_frame,
+		# 	text="Fetch Ranks",
+		# 	style='Custom.TButton',
+		# 	command=self.start_fetch,
+		# 	state=tk.DISABLED
+		# )
+		self.start_button = ctk.CTkButton(
+			master=main_frame,
 			text="Fetch Ranks",
-			command=self.start_fetch,
-			state=tk.DISABLED
+			corner_radius=5,
+			fg_color="gray", 
+			hover_color="gray",
+			text_color="lightgray",
+			border_width=1,
+			border_color="gray"
 		)
 		self.start_button.grid(row=5, column=0, columnspan=2, pady=10)
 
@@ -283,7 +295,13 @@ class CodewarsGUI:
 			messagebox.showerror("Error", f"An error occurred: {str(e)}")
 
 		finally:
-			self.start_button.config(state=tk.NORMAL)
+			self.start_button.configure(
+				state="normal",
+				fg_color="white",
+				hover_color="lightgray",
+				text_color="black",
+				border_color="black"
+			)
 			self.progress_var.set(0)
 
 	def write_user_data(self, user_data):
@@ -336,9 +354,20 @@ class CodewarsGUI:
 
 	def validate_username(self, *args):
 		if self.username.get().strip():
-			self.start_button.config(state=tk.NORMAL)
+			self.start_button.configure(
+				state="normal",
+				fg_color="white",
+				hover_color="lightgray",
+				text_color="black",
+				border_color="black"
+			)
 		else:
-			self.start_button.config(state=tk.DISABLED)
+			self.start_button.configure(
+				state="disabled",
+				fg_color="gray",
+				text_color="lightgray",
+				border_color="gray"
+			)
 
 	def create_json_file(self):
 		if os.path.exists(self.file_path):
@@ -392,7 +421,12 @@ class CodewarsGUI:
 
 	def start_fetch(self):
 		"""Start the rank fetching process in a separate thread."""
-		self.start_button.config(state=tk.DISABLED)
+		self.start_button.configure(
+			state="disabled",
+			fg_color="gray",
+			text_color="lightgray",
+			border_color="gray"
+		)
 		self.set_status("Starting rank fetch...", "info")
 		self.progress_var.set(0)
 		Thread(target=self.fetch_ranks, daemon=True).start()
