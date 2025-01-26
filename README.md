@@ -21,7 +21,7 @@ This script offers a practical solution for Codewars users who want to effortles
 1.  **Clone the Repository:**
 
 	```bash
-	git clone https://github.com/BreadyBred/codewars_rank_fetcher
+	git clone https://github.com/BreadyBred/codewars-rank-fetcher
 	```
 
 2.  **Run the Script:**
